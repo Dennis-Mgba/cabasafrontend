@@ -27,22 +27,24 @@
                 <th>Capacity</th>
               <th>Reason</th>
               <th>Status</th>
-              <!-- <th></th> -->
+              <th></th>
               </tr>
 
               <tr v-for="hall in halls.data" v-bind:key = "hall.id">
                 <td>{{hall.hallName}}</td>
                 <td>{{hall.capacity}}</td>
                 <td>{{hall.reason}}</td>
-                <!-- <td class="status">{{hall.status}}</td> -->
-                <td>
+                <td class="status"
+                :class= "[hall.status === 'Available' ? 'green' : 'red']"
+                >
+                    {{hall.status}}</td>
+                <td v-if="authUser">
                     <button class="button"
-                    @click="isBooked(hall)"
-
-                    :class= "[meetingRoom === hall ? 'taken' : '']"
+                    @click= "booked(id, status, hall)"
+                    :class= "[hall.status === 'Available' ? '' : 'taken']"
+                    :disabled="hall.status !== 'Available'"
                     >
-                        <!-- {{hall.status}} -->
-                        {{hall.status === 'Available' ? 'Available' : 'Unavailable'}}
+                        {{hall.status}}
                     </button>
                 </td>
               </tr>
@@ -64,39 +66,40 @@ export default {
     data() {
         return {
             halls: [],
-            meetingRoom: null,
-            id: ''
+            id: '',
+            status: '',
         }
     },
-    watch: {
-        hall: {
-            immediate: true,
-            handler() {
-                this.booked()
-            }
+    computed: {
+        authUser() {
+            return this.$root.auth.name
         }
     },
     created: function(){
         this.cabasahalls();
     },
     methods: {
-        // booked(id, status){
-        //     axios.put(`http://cabasa.test/api/cabasa/{$id}`, {
-        //         status,
-        //     })
-        //         .then(() => this.halls.find(hall => hall.id === id).status = status)
-        //         .catch(err => console.log(err));
-        // }
-        booked(id, status) {
-            axios.put(`http://cabasa.test/api/cabasa/{$id}`, {
-                status                
+        booked(id, status, hall) {
+            // console.log(id, status, hall);
+            this.id = hall.id
+
+            if (hall.status === 'Available'){
+                hall.status = 'Unavailable'
+            }else {
+                hall.status = 'Available'
+            }
+
+            axios.put(`http://cabasa.test/api/cabasa/${this.id}`, {
+                status: hall.status
             })
-            .then(() => this.halls.find(hall => hall.id === id).status = status)
+            .then(() => {
+                this.halls.find(hall => hall.id === id).status = status
+            })
             .catch(err => console.log(err));
-          },
-        isBooked(hall){
-            this.meetingRoom = hall
         },
+        // isBooked(hall){
+        //     this.meetingRoom = hall
+        // },
         cabasahalls() {
           axios.get('http://cabasa.test/api/cabasas')
           .then(res => this.halls =res.data)
@@ -161,11 +164,11 @@ th, td {
 }
 
 .button {
-    width: 100px;
+    width: 90px;
     border: none;
-    border-radius: 3%;
+    border-radius: 7%;
     font-weight: 400;
-    background-color: #cc0044;
+    background-color: green;
     color: #fff;
 }
 
@@ -175,7 +178,15 @@ th, td {
 }
 
 .status {
-    /* background-color: #00e600; */
+    font-size: 17px;
+}
+
+.green {
+    color: #00cc00;
+}
+
+.red {
+    color: #ff0000;
 }
 
 </style>

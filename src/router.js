@@ -9,6 +9,30 @@ import Login from './views/Login.vue'
 
 vue.use(Router)
 
+
+const router = new Router({
+
+    // mode: 'history',
+
+    routes: [
+        {
+            path: "/",
+            component: Cabasa
+        },
+        {
+            path: "/login",
+            component: Login
+        },
+        {
+            path: "/signup",
+            component: SignUp
+        }
+    ]
+});
+
+export default router;
+
+
 // export default new Router({
 //     mode: "history",
 //     base: process.env.BASE_URL,
@@ -30,22 +54,3 @@ vue.use(Router)
 //         }
 //     ]
 // });
-
-const router = new Router({
-    routes: [
-        {
-            path: "/",
-            component: Cabasa
-        },
-        {
-            path: "/login",
-            component: Login
-        },
-        {
-            path: "/signup",
-            component: SignUp
-        }
-    ]
-});
-
-export default router;

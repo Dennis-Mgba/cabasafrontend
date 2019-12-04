@@ -6,14 +6,21 @@
                     <h3 class="text-center my-4">Login</h3>
                   <div class="form-group">
                     <label>Email</label>
-                    <input type="email" class="form-control"  placeholder="Name@eden.ng">
+                    <input v-model="email" type="email" class="form-control"  placeholder="Name@eden.ng">
                   </div>
                   <div class="form-group">
                     <label>Password</label>
-                    <input type="password" class="form-control" placeholder="Password">
+                    <input v-model="password" type="password" class="form-control" placeholder="Password">
                   </div>
 
-                  <button type="submit" class="btn form-control btn-success">Login</button>
+                  <div class="text-center unauth" v-if="error">
+                      <small class="text-danger unauth-text">{{ error }}</small>
+                  </div>
+
+                  <button @click="loginUser()" type="submit" class="btn form-control btn-success">
+                      <i class="fas fa-spin fa-spinner" v-if="loading"></i>
+                      {{ loading ? '' : 'Login' }}
+                  </button>
                 </form>
             </div>
         </div>
@@ -21,12 +28,45 @@
 </template>
 
 <script>
+import Axios from 'axios';
 
 export default {
-    name: 'SignIn',
-    components: {
+    name: 'Loginn',
 
+    beforeRouteEnter(to, from, next) {
+        if (localStorage.getItem("auth")) {
+            return next({ path: "/" });
+        }
+        next();
     },
+    data() {
+        return {
+            email: '',
+            password: '',
+            error: '',
+            loading: false,
+        }
+    },
+    methods: {
+        loginUser() {
+            this.loading = true
+            const url = 'http://laravel-api-passport.test/api/login';
+
+            Axios.post(url, {
+                email: this.email,
+                password: this.password
+            }).then(response =>{
+                this.loading = false;
+                // console.log(response);
+                localStorage.setItem('auth', JSON.stringify(response.data.success))
+                this.$root.auth = response.data.success;
+                this.$router.push('/');
+            }).catch(({ response }) => {
+                this.loading = false;
+                this.error = response.data.error;
+            });
+        }
+    }
 
 } // end of component class
 </script>

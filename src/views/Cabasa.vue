@@ -101,7 +101,7 @@ export default {
         //     this.meetingRoom = hall
         // },
         cabasahalls() {
-          axios.get('http://cabasa.herokuapp.com/api/cabasas')
+          axios.get('http://cabasa.herokuapp.com/api/cabasas') 
           .then(res => this.halls =res.data)
            .catch(err => console.log(err));
         }

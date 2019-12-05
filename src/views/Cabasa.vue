@@ -89,7 +89,7 @@ export default {
                 hall.status = 'Available'
             }
 
-            axios.put(`http://cabasa.test/api/cabasa/${this.id}`, {
+            axios.put(`http://cabasa.herokuapp.com/api/cabasa/${this.id}`, {
                 status: hall.status
             })
             .then(() => {
@@ -101,7 +101,7 @@ export default {
         //     this.meetingRoom = hall
         // },
         cabasahalls() {
-          axios.get('http://cabasa.test/api/cabasas')
+          axios.get('http://cabasa.herokuapp.com/api/cabasas')
           .then(res => this.halls =res.data)
            .catch(err => console.log(err));
         }

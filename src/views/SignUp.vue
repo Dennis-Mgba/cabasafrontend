@@ -18,6 +18,9 @@
                    <div class="" v-if="errors.email">
                        <small class="text-danger" v-for="error in errors.email" :key="error">{{ error }}</small>
                    </div>
+                   <div>
+                       <small class="alert" id="msg">{{emailMsg}}</small>
+                   </div>
                  </div>
 
                  <div class="form-group">
@@ -36,7 +39,7 @@
                    </div>
                  </div>
 
-                 <button v-on:click="registerUser()" :disabled="loading" type="submit" class="btn form-control btn-success">
+                 <button v-on:click="registerUser()" :disabled="isDisabled, loading" type="submit" class="btn form-control btn-success">
                      <i class="fas fa-spin fa-spinner" v-if="loading"></i>
                      {{ loading ? '' : 'Sign up' }}
                  </button>
@@ -65,15 +68,26 @@ export default {
             confirm_password: '',
             errors: {},
             submitted: false,
-            loading: false
+            loading: false,
+            emailMsg: '',
         }
+    },
+    computed: {
+      isDisabled() {
+        return !this.email || !this.password
+      }
     },
     methods: {
         registerUser() {
-            // console.log(this.username, this.email, this.password, this.confirm_password);
-            this.loading = true
-            const url = 'http://cabasa.test/api/cabasa/register';
+            const url = 'https://cabasa.herokuapp.com/api/cabasa/register';
+            let domain = this.email.indexOf("@edenlife");
+            let dotpos = this.email.lastIndexOf('.ng');
 
+            if (!domain || domain<1 || dotpos<domain+2 || dotpos+2 >= this.email.length) {
+                this.emailMsg = "Please enter an eden email";
+             // console.log('the if statement is working')
+         }else {
+             this.loading = true
             Axios.post(url, {
                 name: this.username,
                 email: this.email,
@@ -82,16 +96,15 @@ export default {
             }).then(response =>{            // get the response form that post api call
                 this.loading = false;
                 this.submitted = true;
-                // console.log(response);
                 localStorage.setItem('auth', JSON.stringify(response.data.success))
                 this.$root.auth = response.data.success;     // in the line of code above we are grabbing the auth object data defined main.js file, in the vue instance and assiging the response gotten from our api request to it
                 this.$router.push('/');
             }).catch(({ response }) => {
                 this.loading = false;
                 this.submitted = true;
-                // console.log(response)
                 this.errors = response.data.error;
             })
+            }
         }
     }
 }
@@ -99,6 +112,7 @@ export default {
 </script>
 
 <style scoped>
-
-
+    #msg {
+        color: red;
+    }
 </style>

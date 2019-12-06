@@ -50,7 +50,7 @@ export default {
     methods: {
         loginUser() {
             this.loading = true
-            const url = 'http://laravel-api-passport.test/api/login';
+            const url = 'https://cabasa.herokuapp.com/api/cabasa/login';
 
             Axios.post(url, {
                 email: this.email,
